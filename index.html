@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhD Centralised Portal | Global Doctoral Institute</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#EA580C',
+            'brand-dark': '#C2410C',
+            'slate-panel': '#1F242D',
+            'slate-surface': '#2A303C'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .scratch-underline {
+      position: relative;
+      display: inline-block;
+    }
+    .scratch-underline::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 100%;
+      height: 8px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 20' preserveAspectRatio='none'%3E%3Cpath d='M5 12 Q 75 4, 150 11 T 295 8 Q 200 18, 10 14' stroke='%23EA580C' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/100% 100%;
+    }
+    /* Custom scrollbar for control panel tables */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-[#F3F4F6] text-gray-800 antialiased min-h-screen flex flex-col selection:bg-orange-500 selection:text-white">
+
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- Institute Brand Logo -->
+      <a href="#" onclick="showSection('home')" class="flex items-center gap-3 group">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 via-orange-600 to-amber-700 text-white font-black text-xl flex items-center justify-center shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
+          P
+        </div>
+        <div>
+          <span class="font-bold text-lg text-gray-900 block leading-tight">PhD Centralised Portal</span>
+          <span class="text-xs text-gray-500 font-medium">Unified PhD & DBA Application Desk</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Bar -->
+      <nav class="hidden md:flex items-center gap-6">
+        <button onclick="showSection('home')" id="nav-btn-home" class="px-3 py-2 text-sm font-semibold text-orange-600 transition-colors">Home</button>
+        <button onclick="scrollToPrograms()" class="px-3.5 py-1.5 text-sm font-semibold text-orange-800 bg-orange-100 hover:bg-orange-200 rounded-lg transition-colors">Programs</button>
+        <button onclick="openApplyModal()" class="px-3 py-2 text-sm font-semibold text-gray-700 hover:text-orange-600 transition-colors">Apply Now</button>
+        <button onclick="showSection('tracker')" id="nav-btn-tracker" class="px-3 py-2 text-sm font-semibold text-gray-700 hover:text-orange-600 transition-colors">Track Application</button>
+        <button onclick="openAdminModal()" class="flex items-center gap-2 px-3.5 py-2 text-sm font-semibold text-gray-700 hover:text-gray-900 border border-gray-300 rounded-xl hover:border-gray-400 bg-gray-50 hover:bg-white transition-all shadow-xs">
+          <i class="fa-solid fa-shield-halved text-xs text-orange-600"></i>
+          <span id="nav-admin-label">Admin Portal</span>
+        </button>
+      </nav>
+
+      <!-- Mobile Hamburger Toggle -->
+      <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-gray-600 hover:text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" aria-label="Toggle Menu">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Dropdown Navigation -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-200 px-4 pt-2 pb-4 space-y-2">
+      <button onclick="showSection('home'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-gray-800 font-semibold hover:bg-gray-50 rounded-lg">Home</button>
+      <button onclick="scrollToPrograms(); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-orange-700 font-semibold bg-orange-50 rounded-lg">Doctoral Programs</button>
+      <button onclick="openApplyModal(); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-gray-800 font-semibold hover:bg-gray-50 rounded-lg">Apply Now</button>
+      <button onclick="showSection('tracker'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-gray-800 font-semibold hover:bg-gray-50 rounded-lg">Track Application</button>
+      <button onclick="openAdminModal(); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-orange-600 font-semibold bg-gray-100 rounded-lg">Admin Control Center</button>
+    </div>
+  </header>
+
+  <main class="flex-grow">
+    <section id="sec-home" class="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
+      
+      <!-- Hero Banner -->
+      <div class="bg-[#262B34] text-white rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden border border-gray-700/60">
+        <div class="absolute -right-20 -top-20 w-96 h-96 bg-orange-500/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute right-10 bottom-0 opacity-10 text-9xl font-black text-white pointer-events-none select-none">
+          PHD
+        </div>
+        
+        <div class="relative z-10 max-w-3xl space-y-6">
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-semibold tracking-wide uppercase">
+              <i class="fa-solid fa-globe text-[11px]"></i> Admissions Open 2026-2027
+            </div>
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-600/90 via-orange-600/80 to-amber-700/90 text-amber-100 font-semibold text-xs sm:text-sm tracking-wide shadow-md shadow-orange-950/40 border border-amber-500/40 animate-pulse ring-2 ring-orange-500/20">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
+              </span>
+              <i class="fa-solid fa-graduation-cap text-amber-200"></i> Up to 70% Alumni Scholarship
+            </div>
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            Advance Your Academic & <br class="hidden sm:inline" />
+            <span class="scratch-underline text-white">Professional Legacy</span>
+          </h1>
+
+          <p class="text-gray-300 text-base sm:text-lg leading-relaxed max-w-2xl font-normal">
+            Explore world-class research doctorates and executive doctorates of business administration designed for visionary leaders and academic scholars.
+          </p>
+
+          <div class="flex flex-wrap gap-4 pt-2">
+            <button onclick="openApplyModal()" class="px-6 py-3.5 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl shadow-lg shadow-orange-600/30 flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-95">
+              <span>Start Application</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+            <button onclick="showSection('tracker')" class="px-6 py-3.5 bg-gray-700/80 hover:bg-gray-700 text-gray-200 font-semibold rounded-xl border border-gray-600/70 transition-all hover:text-white">
+              <i class="fa-solid fa-magnifying-glass me-2 text-xs text-orange-400"></i>Track Existing Status
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-8 border border-gray-200/80 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-6 border-b border-gray-100">
+          <div>
+            <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">4-Step Selection Procedure</h2>
+            <p class="text-gray-500 text-sm mt-1">Transparent and rigorous evaluation process for doctoral candidate admission.</p>
+          </div>
+          <span class="mt-2 sm:mt-0 text-xs font-semibold px-3 py-1 bg-gray-100 text-gray-700 rounded-full w-max">
+            Rolling Admissions
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="relative p-6 bg-gray-50/80 rounded-2xl border border-gray-200/70 space-y-3 hover:border-orange-200 transition-colors">
+            <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 font-black flex items-center justify-center text-base shadow-xs">1</div>
+            <h3 class="font-bold text-gray-900 text-base">Online Application</h3>
+            <p class="text-xs text-gray-600 leading-relaxed">Submit proposal, credentials, and personal research trajectory online through the unified form.</p>
+          </div>
+
+          <div class="relative p-6 bg-gray-50/80 rounded-2xl border border-gray-200/70 space-y-3 hover:border-orange-200 transition-colors">
+            <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 font-black flex items-center justify-center text-base shadow-xs">2</div>
+            <h3 class="font-bold text-gray-900 text-base">Shortlisting</h3>
+            <p class="text-xs text-gray-600 leading-relaxed">Faculty committee evaluates academic background, research viability, and supervisor alignment.</p>
+          </div>
+
+          <div class="relative p-6 bg-gray-50/80 rounded-2xl border border-gray-200/70 space-y-3 hover:border-orange-200 transition-colors">
+            <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 font-black flex items-center justify-center text-base shadow-xs">3</div>
+            <h3 class="font-bold text-gray-900 text-base">Interview with Experts</h3>
+            <p class="text-xs text-gray-600 leading-relaxed">Interactive online interview with senior research committee members and doctoral deans.</p>
+          </div>
+
+          <div class="relative p-6 bg-gray-50/80 rounded-2xl border border-gray-200/70 space-y-3 hover:border-emerald-200 transition-colors">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 font-black flex items-center justify-center text-base shadow-xs">4</div>
+            <h3 class="font-bold text-gray-900 text-base">Final Selection</h3>
+            <p class="text-xs text-gray-600 leading-relaxed">Formal offer letter issued with reference allocation, scholarship tier, and primary guide assigned.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="study-modes-section" class="bg-[#1A1D23] text-white rounded-3xl p-6 sm:p-10 shadow-2xl space-y-8 border border-gray-800">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-800 pb-6">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Choose your study mode</h2>
+            <p class="text-gray-400 text-sm mt-1">Select from flexible learning structures tailored to your lifestyle and academic goals.</p>
+          </div>
+          <span class="text-xs text-orange-400 bg-orange-950/60 border border-orange-800/60 px-3.5 py-1.5 rounded-full font-semibold w-max flex items-center gap-1.5">
+            <i class="fa-solid fa-shapes text-orange-500"></i> 8 Pathways Available
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-[#262B34] p-5 rounded-2xl border border-gray-700/60 hover:border-orange-500/50 transition-all flex flex-col justify-between space-y-4">
+            <div>
+              <h3 class="font-bold text-base text-white mb-1.5">Full-time, on-campus PhD</h3>
+              <p class="text-gray-400 text-xs leading-relaxed">Suits applicants who can commit to regular on-campus laboratory and seminar research.</p>
+            </div>
+            <span class="text-[11px] text-orange-400 font-semibold bg-orange-950/40 px-2.5 py-1 rounded-md w-max border border-orange-900/40">On-Campus Immersion</span>
+          </div>
+
+          <div class="bg-[#262B34] p-5 rounded-2xl border border-gray-700/60 hover:border-orange-500/50 transition-all flex flex-col justify-between space-y-4">
+            <div>
+              <h3 class="font-bold text-base text-white mb-1.5">Part-time PhD</h3>
+              <p class="text-gray-400 text-xs leading-relaxed">Suits applicants balancing research with employment commitments. Eligibility set per department.</p>
+            </div>
+            <span class="text-[11px] text-gray-300 font-semibold bg-gray-800/80 px-2.5 py-1 rounded-md w-max border border-gray-700">Flexible Timeline</span>
+          </div>
+
+          <div class="bg-[#262B34] p-5 rounded-2xl border border-gray-700/60 hover:border-orange-500/50 transition-all flex flex-col justify-between space-y-4">
+            <div>
+              <h3 class="font-bold text-base text-white mb-1.5">Working-professional options</h3>
+              <p class="text-gray-400 text-xs leading-relaxed">Tailored weekend colloquiums and evening mentoring where permitted by sponsoring employers.</p>
+            </div>
+            <span class="text-[11px] text-gray-300 font-semibold bg-gray-800/80 px-2.5 py-1 rounded-md w-max border border-gray-700">Executive Support</span>
+          </div>
+
+          <div class="bg-[#262B34] p-5 rounded-2xl border border-gray-700/60 hover:border-orange-500/50 transition-all flex flex-col justify-between space-y-4">
+            <div>
+              <h3 class="font-bold text-base text-white mb-1.5">Hybrid study</h3>
+              <p class="text-gray-400 text-xs leading-relaxed">Blended online research coursework with periodic physical residencies for doctoral symposia.</p>
+            </div>
+            <span class="text-[11px] text-gray-300 font-semibold bg-gray-800/80 px-2.5 py-1 rounded-md w-max border border-gray-700">Blended Seminars</span>
+          </div>
+
+          <div class="bg-[#262B34] p-5 rounded-2xl border border-gray-700/60 hover:border-orange-500/50 transition-all flex flex-col justify-between space-y-4">
+            <div>
+              <h3 class="font-bold text-base text-white mb-1.5">DBA or executive doctorate</h3>
+              <p class="text-gray-400 text-xs leading-relaxed">A professional doctorate for experienced organizational practitioners targeting strategic innovation.</p>
+            </div>
+            <span class="text-[11px] text-orange-400 font-semibold bg-orange-950/40 px-2.5 py-1 rounded-md w-max border border-orange-900/40">Applied Leadership</span>
+          </div>
+
+          <div class="bg-[#262B34] p-5 rounded-2xl border border-gray-700/60 hover:border-orange-500/50 transition-all flex flex-col justify-between space-y-4">
+            <div>
+              <h3 class="font-bold text-base text-white mb-1.5">Online or distance options</h3>
+              <p class="text-gray-400 text-xs leading-relaxed">Only where legally permitted for the institution and qualification. Verification provided prior to admission.</p>
+            </div>
+            <span class="text-[11px] text-gray-300 font-semibold bg-gray-800/80 px-2.5 py-1 rounded-md w-max border border-gray-700">Remote Delivery</span>
+          </div>
+
+          <div class="bg-[#262B34] p-5 rounded-2xl border border-orange-500/50 hover:border-orange-500 transition-all flex flex-col justify-between space-y-4 relative overflow-hidden">
+            <div class="absolute -top-1 -right-1 bg-orange-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-bl shadow-xs">NEW</div>
+            <div>
+              <h3 class="font-bold text-base text-white mb-1.5">Executive Doctoral Fellowship</h3>
+              <p class="text-gray-400 text-xs leading-relaxed">Fully funded research track for senior executives with monthly stipend and direct dean mentorship.</p>
+            </div>
+            <span class="text-[11px] text-orange-400 font-semibold bg-orange-950/40 px-2.5 py-1 rounded-md w-max border border-orange-900/40">Full Sponsorship + Stipend</span>
+          </div>
+
+          <div class="bg-[#262B34] p-5 rounded-2xl border border-orange-500/50 hover:border-orange-500 transition-all flex flex-col justify-between space-y-4 relative overflow-hidden">
+            <div class="absolute -top-1 -right-1 bg-orange-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-bl shadow-xs">NEW</div>
+            <div>
+              <h3 class="font-bold text-base text-white mb-1.5">Industrial PhD Track</h3>
+              <p class="text-gray-400 text-xs leading-relaxed">Joint industry-academia research with corporate sponsorship and specialized laboratory access.</p>
+            </div>
+            <span class="text-[11px] text-orange-400 font-semibold bg-orange-950/40 px-2.5 py-1 rounded-md w-max border border-orange-900/40">Corporate Partnership</span>
+          </div>
+        </div>
+
+        <div class="bg-[#232730] border-l-4 border-orange-500 p-4 rounded-r-xl text-xs text-gray-300 leading-relaxed flex items-center gap-3">
+          <i class="fa-solid fa-circle-info text-orange-500 text-lg"></i>
+          <span>Online or distance delivery is presented strictly where regulations and the accredited institution permit it. Submission of an online form does not guarantee remote eligibility.</span>
+        </div>
+      </div>
+
+      <div id="programs-directory" class="space-y-6 pt-4">
+        <div class="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <div class="relative w-full md:w-96">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-gray-400 text-sm"></i>
+            <input type="text" id="prog-search" oninput="filterPrograms()" placeholder="Search by program title, discipline, keyword..." class="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all">
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+            <button onclick="setProgramFilter('all')" id="filter-all" class="prog-filter-btn px-4 py-2 text-xs font-bold rounded-xl bg-orange-600 text-white whitespace-nowrap shadow-xs transition-all">All Programs</button>
+            <button onclick="setProgramFilter('phd')" id="filter-phd" class="prog-filter-btn px-4 py-2 text-xs font-semibold rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap transition-all">Ph.D. Degrees</button>
+            <button onclick="setProgramFilter('dba')" id="filter-dba" class="prog-filter-btn px-4 py-2 text-xs font-semibold rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap transition-all">Executive DBA</button>
+          </div>
+        </div>
+
+        <div id="program-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Dynamically populated via renderPrograms() -->
+        </div>
+      </div>
+
+    </section>
+
+    <section id="sec-tracker" class="hidden py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-6">
+      <div class="bg-white p-8 sm:p-10 rounded-3xl border border-gray-200/80 shadow-sm space-y-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-orange-600 bg-orange-50 px-2.5 py-1 rounded-md border border-orange-200">Real-Time Verification</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-2">Track Application Status</h2>
+          <p class="text-gray-500 text-sm mt-1">Enter your unique Reference ID generated during submission (e.g., GDI-8X92K4).</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input type="text" id="track-id-input" placeholder="e.g. GDI-8X92K4" class="flex-1 px-4 py-3.5 border border-gray-300 rounded-xl uppercase font-mono text-base tracking-wider focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all">
+          <button onclick="trackApplication()" class="px-8 py-3.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-all shadow-md shadow-orange-600/20 active:scale-95 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-radar text-sm"></i>
+            <span>Track Application</span>
+          </button>
+        </div>
+
+        <!-- Sample IDs Helper for easy user testing -->
+        <div class="flex flex-wrap items-center gap-2 pt-1 text-xs text-gray-500">
+          <span class="font-medium">Quick Test Sample IDs:</span>
+          <button type="button" onclick="quickTrack('GDI-8X92K4')" class="px-2 py-0.5 bg-gray-100 hover:bg-orange-50 hover:text-orange-700 rounded border border-gray-200 font-mono transition-colors">GDI-8X92K4</button>
+          <button type="button" onclick="quickTrack('GDI-3M19A7')" class="px-2 py-0.5 bg-gray-100 hover:bg-orange-50 hover:text-orange-700 rounded border border-gray-200 font-mono transition-colors">GDI-3M19A7</button>
+        </div>
+
+        <div id="track-result" class="hidden pt-6 border-t border-gray-100 space-y-6">
+          <!-- Populated by trackApplication() -->
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-admin-panel" class="hidden py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+      <!-- Admin Bar Header -->
+      <div class="bg-[#1F242D] text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-gray-700/80 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs font-bold tracking-wider uppercase text-emerald-400">Authenticated Admin Session</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Admissions Central Control Center</h2>
+          <p class="text-gray-400 text-xs sm:text-sm mt-1">Review candidates, manage admission states, evaluate research briefs, and export cohorts.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <button onclick="exportApplicationsToCSV()" class="px-4 py-2.5 bg-gray-700/70 hover:bg-gray-700 text-gray-200 text-xs font-semibold rounded-xl border border-gray-600 transition-all flex items-center gap-2">
+            <i class="fa-solid fa-file-csv text-emerald-400"></i> Export CSV
+          </button>
+          <button onclick="handleAdminLogout()" class="px-4 py-2.5 bg-red-600/90 hover:bg-red-600 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2 shadow-xs">
+            <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Stat KPI Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <div class="flex justify-between items-start">
+            <p class="text-xs font-bold uppercase text-gray-400">Total Applicants</p>
+            <span class="p-2 bg-orange-50 text-orange-600 rounded-lg text-xs"><i class="fa-solid fa-users"></i></span>
+          </div>
+          <h3 id="stat-total-apps" class="text-2xl sm:text-3xl font-black text-gray-900 mt-2">0</h3>
+          <span class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1 mt-1">
+            <i class="fa-solid fa-arrow-trend-up"></i> Live Synchronized
+          </span>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <div class="flex justify-between items-start">
+            <p class="text-xs font-bold uppercase text-gray-400">Under Review</p>
+            <span class="p-2 bg-amber-50 text-amber-600 rounded-lg text-xs"><i class="fa-solid fa-hourglass-half"></i></span>
+          </div>
+          <h3 id="stat-pending-apps" class="text-2xl sm:text-3xl font-black text-amber-600 mt-2">0</h3>
+          <span class="text-[11px] text-gray-500 font-medium mt-1 block">Awaiting Shortlist</span>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <div class="flex justify-between items-start">
+            <p class="text-xs font-bold uppercase text-gray-400">Interview Stage</p>
+            <span class="p-2 bg-indigo-50 text-indigo-600 rounded-lg text-xs"><i class="fa-solid fa-user-tie"></i></span>
+          </div>
+          <h3 id="stat-interview-apps" class="text-2xl sm:text-3xl font-black text-indigo-600 mt-2">0</h3>
+          <span class="text-[11px] text-gray-500 font-medium mt-1 block">Faculty Panel Assigned</span>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <div class="flex justify-between items-start">
+            <p class="text-xs font-bold uppercase text-gray-400">Offer Granted</p>
+            <span class="p-2 bg-emerald-50 text-emerald-600 rounded-lg text-xs"><i class="fa-solid fa-award"></i></span>
+          </div>
+          <h3 id="stat-accepted-apps" class="text-2xl sm:text-3xl font-black text-emerald-600 mt-2">0</h3>
+          <span class="text-[11px] text-emerald-600 font-medium mt-1 block">Final Selection Complete</span>
+        </div>
+      </div>
+
+      <!-- Admin Applications Registry Table -->
+      <div class="bg-white rounded-3xl border border-gray-200/80 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-gray-50/50">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">Registered Candidate Pipeline</h3>
+            <p class="text-xs text-gray-500">Real-time status updates immediately reflect on candidate tracker pages.</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+              <input type="text" id="admin-search" oninput="renderAdminDashboard()" placeholder="Search candidate / ID..." class="pl-8 pr-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none">
+            </div>
+            <select id="admin-status-filter" onchange="renderAdminDashboard()" class="text-xs border border-gray-200 rounded-lg px-3 py-1.5 bg-white font-medium focus:ring-2 focus:ring-orange-500 focus:outline-none">
+              <option value="ALL">All Statuses</option>
+              <option value="Application Submitted">Application Submitted</option>
+              <option value="Under Review">Under Review</option>
+              <option value="Interview Shortlisted">Interview Shortlisted</option>
+              <option value="Offer Issued">Offer Issued</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-gray-50 text-gray-600 font-bold uppercase tracking-wider border-b border-gray-200">
+              <tr>
+                <th class="px-6 py-3.5">Ref ID</th>
+                <th class="px-6 py-3.5">Applicant Details</th>
+                <th class="px-6 py-3.5">Program Track</th>
+                <th class="px-6 py-3.5">Submission Date</th>
+                <th class="px-6 py-3.5">Current Status</th>
+                <th class="px-6 py-3.5 text-center">Action & Dossier</th>
+              </tr>
+            </thead>
+            <tbody id="admin-table-body" class="divide-y divide-gray-100 font-medium">
+              <!-- Rendered dynamically by renderAdminDashboard() -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="admin-table-empty" class="hidden p-8 text-center text-gray-500 space-y-2">
+          <i class="fa-solid fa-inbox text-3xl text-gray-300"></i>
+          <p class="text-xs">No candidate applications found matching query.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section class="bg-[#EA580C] text-white py-16 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
+    <div class="max-w-4xl mx-auto space-y-6">
+      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+        Take the Next Step in Your Research Journey.
+      </h2>
+      <p class="text-orange-100 text-base sm:text-lg max-w-2xl mx-auto font-normal">
+        Find a suitable doctoral program and connect with the admissions team for research proposal guidance.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4 pt-2">
+        <button onclick="scrollToPrograms()" class="px-6 py-3 border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-colors">
+          Explore Programs
+        </button>
+        <button onclick="openAiAdvisorModal()" class="px-6 py-3 border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>Ask AI Advisor</span>
+        </button>
+        <button onclick="openApplyModal()" class="px-6 py-3 bg-white text-orange-600 font-bold rounded-xl hover:bg-orange-50 transition-colors shadow-lg shadow-orange-950/20">
+          Apply Now
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-[#181B20] text-gray-300 py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-800">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 mb-10 text-sm">
+      <div class="space-y-3">
+        <h4 class="font-bold text-white text-base">PhD Program</h4>
+        <p class="text-gray-400 text-xs italic bg-gray-800/60 p-3.5 rounded-xl border border-gray-700/50 leading-relaxed">
+          Empowering international researchers, scholars, and industry professionals through recognized higher doctoral and executive education tracks.
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <h4 class="font-bold text-white text-base">Programs</h4>
+        <ul class="space-y-2.5 text-xs">
+          <li><a href="javascript:void(0)" onclick="setProgramFilter('phd'); scrollToPrograms()" class="hover:underline text-gray-300 transition-colors">PhD programs</a></li>
+          <li><a href="javascript:void(0)" onclick="setProgramFilter('dba'); scrollToPrograms()" class="hover:underline text-gray-300 transition-colors">DBA programs</a></li>
+          <li><a href="#study-modes-section" class="hover:underline text-gray-300 transition-colors">Study modes</a></li>
+        </ul>
+      </div>
+
+      <div class="space-y-3">
+        <h4 class="font-bold text-white text-base">Admissions</h4>
+        <ul class="space-y-2.5 text-xs">
+          <li><a href="javascript:void(0)" onclick="openApplyModal()" class="hover:underline text-gray-300 transition-colors">Eligibility and process</a></li>
+          <li><a href="javascript:void(0)" onclick="openApplyModal()" class="hover:underline text-gray-300 transition-colors">Apply</a></li>
+          <li><a href="javascript:void(0)" onclick="showSection('tracker')" class="hover:underline text-gray-300 transition-colors">Track application</a></li>
+          <li><a href="javascript:void(0)" onclick="openAdminModal()" class="hover:underline text-gray-300 transition-colors">Administrator Access</a></li>
+        </ul>
+      </div>
+
+      <div class="space-y-3">
+        <h4 class="font-bold text-white text-base">Contact</h4>
+        <ul class="space-y-2 text-xs text-gray-400">
+          <li><strong class="text-gray-300">Address:</strong> Global Doctoral Campus, Academic Enclave</li>
+          <li><strong class="text-gray-300">Phone:</strong> +1 (800) 555-DOCTORAL</li>
+          <li><strong class="text-gray-300">Email:</strong> admissions@doctoral-institute.org</li>
+        </ul>
+        <button onclick="openAiAdvisorModal()" class="mt-2 text-xs bg-orange-600/30 hover:bg-orange-600/50 text-orange-300 border border-orange-500/40 px-3 py-1.5 rounded-lg flex items-center gap-2 transition-all">
+          <i class="fa-solid fa-wand-magic-sparkles text-orange-400"></i> Ask AI Counselor
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <h4 class="font-bold text-white text-base">Policies</h4>
+        <ul class="space-y-2.5 text-xs">
+          <li><a href="javascript:void(0)" onclick="showToast('Adherence to ISO Academic Privacy Regulations', 'info')" class="hover:underline text-gray-300 transition-colors">Privacy policy</a></li>
+          <li><a href="javascript:void(0)" onclick="showToast('Standard Academic Board Terms Applied', 'info')" class="hover:underline text-gray-300 transition-colors">Terms and conditions</a></li>
+          <li><a href="javascript:void(0)" onclick="showToast('Scholarship & Stipend terms governed by Academic Senate', 'info')" class="hover:underline text-gray-300 transition-colors">Fee and refund policy</a></li>
+          <li><a href="javascript:void(0)" onclick="showToast('Universal Web Content Accessibility Guideline Compliant', 'info')" class="hover:underline text-gray-300 transition-colors">Accessibility</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto border-t border-gray-800/80 pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-500 gap-2">
+      <p>&copy; 2026 PhD Program. <span class="italic bg-gray-800/70 px-2 py-0.5 rounded text-gray-400">Global Doctoral Institute Academic Board.</span></p>
+      <p class="text-gray-500">Global Doctoral Institute Portal &bull; All Rights Reserved</p>
+    </div>
+  </footer>
+
+  <div id="apply-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto border border-gray-100">
+      <button onclick="closeApplyModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-2xl font-bold focus:outline-none" aria-label="Close modal">
+        &times;
+      </button>
+
+      <div class="mb-6 space-y-1">
+        <span class="text-xs font-bold text-orange-600 uppercase tracking-wider">Admissions 2026-2027</span>
+        <h3 class="text-2xl font-extrabold text-gray-900" id="wizard-title">Doctoral Application Form</h3>
+        <p class="text-xs text-gray-500">Step <span id="wiz-step-num">1</span> of 3</p>
+        
+        <div class="flex gap-2 pt-2">
+          <div id="step-bar-1" class="h-1.5 flex-1 bg-orange-600 rounded-full transition-all"></div>
+          <div id="step-bar-2" class="h-1.5 flex-1 bg-gray-200 rounded-full transition-all"></div>
+          <div id="step-bar-3" class="h-1.5 flex-1 bg-gray-200 rounded-full transition-all"></div>
+        </div>
+      </div>
+
+      <div id="wiz-error-msg" class="hidden mb-4 p-3.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
+        <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+        <span id="wiz-error-text">Please fill out all required fields before proceeding.</span>
+      </div>
+
+      <!-- NOTE: Standard required attributes on hidden wizard steps were causing native browser submission blocks. Handled reliably via JavaScript validation! -->
+      <form id="apply-form" onsubmit="handleApplySubmit(event)" novalidate class="space-y-4">
+        
+        <!-- Wizard Step 1 -->
+        <div id="wiz-step-1" class="space-y-4">
+          <h4 class="font-bold text-gray-900 border-b pb-2 text-sm flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">1</span>
+            Personal Information & Program Selection <span class="text-xs font-normal text-red-500">(All fields mandatory)</span>
+          </h4>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1.5">Program Track <span class="text-red-500">*</span></label>
+            <div class="grid grid-cols-3 gap-3 mb-3">
+              <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-orange-50/50 transition-colors">
+                <input type="radio" name="prog_track" value="PhD" checked onclick="selectTrack('PhD')" class="text-orange-600 focus:ring-orange-500">
+                <span class="text-xs font-bold text-gray-800">Ph.D. Degree</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-orange-50/50 transition-colors">
+                <input type="radio" name="prog_track" value="DBA" onclick="selectTrack('DBA')" class="text-orange-600 focus:ring-orange-500">
+                <span class="text-xs font-bold text-gray-800">Executive DBA</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-orange-50/50 transition-colors">
+                <input type="radio" name="prog_track" value="Online" onclick="selectTrack('Online')" class="text-orange-600 focus:ring-orange-500">
+                <span class="text-xs font-bold text-gray-800">Online Track</span>
+              </label>
+            </div>
+
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Target Discipline / Specialization <span class="text-red-500">*</span></label>
+            <select id="app-program" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500 bg-white">
+              <option value="PhD Computer Science & AI">Ph.D. in Computer Science & Artificial Intelligence (STEM / Fully Funded)</option>
+              <option value="Executive Doctorate of Business Administration">Executive Doctorate of Business Administration (DBA)</option>
+              <option value="PhD Global Public Health">Ph.D. in Global Health Policy & Epidemiology</option>
+              <option value="PhD Renewable Energy Systems">Ph.D. in Renewable Energy Systems & Grid Decarbonization</option>
+              <option value="PhD Industrial Engineering">Ph.D. in Industrial Engineering (Corporate Sponsored Track)</option>
+              <option value="Executive DBA Data-Driven Leadership">Executive DBA in Data-Driven Leadership</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">Full Name (with Title) <span class="text-red-500">*</span></label>
+              <input type="text" id="app-name" placeholder="e.g. Dr. Sarah Jenkins" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">Email Address <span class="text-red-500">*</span></label>
+              <input type="email" id="app-email" placeholder="applicant@domain.com" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Phone Number (with Country Code) <span class="text-red-500">*</span></label>
+            <input type="tel" id="app-phone" placeholder="+1 (555) 000-0000" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+          </div>
+        </div>
+
+        <!-- Wizard Step 2 -->
+        <div id="wiz-step-2" class="space-y-4 hidden">
+          <h4 class="font-bold text-gray-900 border-b pb-2 text-sm flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">2</span>
+            Academic & Professional Background <span class="text-xs font-normal text-red-500">(All fields mandatory)</span>
+          </h4>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">Highest Degree Earned <span class="text-red-500">*</span></label>
+              <input type="text" id="app-qual" placeholder="e.g. M.Sc. Data Science / MBA / M.Tech" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">Previous Alma Mater / Institution <span class="text-red-500">*</span></label>
+              <input type="text" id="app-inst" placeholder="e.g. Stanford University" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">Years of Work / Research Experience <span class="text-red-500">*</span></label>
+              <input type="number" id="app-exp" min="0" max="40" placeholder="e.g. 6" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">Current Organisation / Employer <span class="text-red-500">*</span></label>
+              <input type="text" id="app-org" placeholder="e.g. Novartis Research / Tech Corp" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- Wizard Step 3 -->
+        <div id="wiz-step-3" class="space-y-4 hidden">
+          <h4 class="font-bold text-gray-900 border-b pb-2 text-sm flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">3</span>
+            Research Statement & Candidate Declaration <span class="text-xs font-normal text-red-500">(Mandatory)</span>
+          </h4>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Proposed Research Topic / Abstract <span class="text-red-500">*</span></label>
+            <textarea id="app-proposal" rows="4" placeholder="State your proposed research title, problem statement, key methodology, and intended contribution to academic literature..." class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500"></textarea>
+          </div>
+
+          <div class="bg-gray-50 border border-gray-200 p-4 rounded-xl space-y-3">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" id="app-declaration" class="mt-1 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded cursor-pointer">
+              <label for="app-declaration" class="text-xs text-gray-700 font-medium leading-relaxed cursor-pointer">
+                I hereby certify that all information submitted in this application is accurate and authored by me. I agree to comply with the research ethics policies of the Global Doctoral Institute.
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wizard Navigation Controls -->
+        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+          <button type="button" id="wiz-prev-btn" onclick="wizPrev()" class="hidden px-5 py-2.5 text-xs font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back
+          </button>
+          
+          <div class="ml-auto flex gap-3">
+            <button type="button" id="wiz-next-btn" onclick="wizNext()" class="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-xl text-xs shadow-md transition-colors flex items-center gap-2">
+              Next Step <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+            <button type="submit" id="wiz-submit-btn" class="hidden px-7 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md transition-colors flex items-center gap-2">
+              Submit Application <i class="fa-solid fa-paper-plane text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <div id="admin-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-gray-100">
+      <button onclick="closeAdminModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl font-bold focus:outline-none">&times;</button>
+      
+      <div id="admin-login-view" class="space-y-4">
+        <div class="space-y-1">
+          <div class="w-11 h-11 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-lg mb-2 shadow-xs">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900">Admin Control Portal</h3>
+          <p class="text-xs text-gray-500">Authorized admission committee members only.</p>
+        </div>
+
+        <!-- Quick Credentials helper badge for testing -->
+        <div class="bg-orange-50 border border-orange-200 p-3 rounded-xl flex items-center justify-between text-xs">
+          <div>
+            <div class="font-bold text-orange-950">Default Credentials</div>
+            <div class="text-[11px] text-orange-800 font-mono">admin@2000 / KA18SDA370502</div>
+          </div>
+          <button type="button" onclick="fillAdminCredentials()" class="px-2.5 py-1 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-[10px] shadow-xs">
+            Auto-fill
+          </button>
+        </div>
+
+        <form onsubmit="handleAdminLogin(event)" class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Admin ID</label>
+            <input type="text" id="admin-id" placeholder="admin@2000" required class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Password</label>
+            <input type="password" id="admin-pass" placeholder="••••••••••••" required class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none">
+          </div>
+          <p id="admin-err" class="text-xs text-red-600 hidden font-semibold flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-exclamation"></i> Invalid credentials. Check your Admin ID or Password.
+          </p>
+          <button type="submit" class="w-full py-3 bg-gray-900 hover:bg-black text-white font-bold rounded-xl text-sm transition-all shadow-md active:scale-98">
+            Authenticate & Open Dashboard
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="dossier-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[85vh] overflow-y-auto border border-gray-100">
+      <button onclick="closeDossierModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+      
+      <div id="dossier-content" class="space-y-4">
+        <!-- Rendered by openDossierModal() -->
+      </div>
+    </div>
+  </div>
+
+  <div id="ai-advisor-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-[#1E232A] text-white rounded-3xl max-w-xl w-full p-6 shadow-2xl relative border border-gray-700">
+      <button onclick="closeAiAdvisorModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold focus:outline-none">&times;</button>
+      
+      <div class="flex items-center gap-3 mb-4 border-b border-gray-700 pb-3">
+        <div class="w-10 h-10 rounded-xl bg-orange-600 text-white flex items-center justify-center font-bold text-lg shadow-lg">
+          <i class="fa-solid fa-brain"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg text-white">Gemini Academic AI Counselor</h3>
+          <p class="text-xs text-orange-400">Instant doctoral advisory on admissions, supervisors, and funding</p>
+        </div>
+      </div>
+
+      <div id="ai-chat-box" class="bg-[#14171C] rounded-2xl p-4 h-64 overflow-y-auto space-y-3 mb-4 text-xs leading-relaxed border border-gray-800">
+        <div class="bg-gray-800/80 text-gray-200 p-3.5 rounded-2xl max-w-[85%] border border-gray-700">
+          👋 Hello! I am your AI Academic Advisor for the Global Doctoral Institute. Ask me anything regarding Ph.D. requirements, Executive DBA eligibility, writing competitive research proposals, or matching supervisors!
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <input type="text" id="ai-query-input" placeholder="e.g. Can I pursue a DBA while working full-time in healthcare?" onkeydown="if(event.key==='Enter') sendAiQuery()" class="flex-1 bg-[#282E38] text-white placeholder-gray-500 text-xs px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500">
+        <button onclick="sendAiQuery()" id="ai-send-btn" class="px-5 py-3 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-xl text-xs flex items-center gap-2 transition-all shadow-md active:scale-95">
+          <span>Ask AI</span>
+          <i class="fa-solid fa-paper-plane text-[10px]"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let applications = [
+      { 
+        id: "GDI-8X92K4", 
+        name: "Dr. Sarah Jenkins", 
+        email: "s.jenkins@stanford-alumni.org", 
+        phone: "+1 (555) 234-8890", 
+        program: "PhD Computer Science & AI", 
+        status: "Interview Shortlisted", 
+        date: "2026-10-12",
+        qual: "M.Sc. Artificial Intelligence",
+        inst: "Carnegie Mellon University",
+        exp: "7",
+        org: "DeepHealth Robotics",
+        proposal: "Neural Attention Architectures for Early Detection of Neurodegenerative Biomarkers in Longitudinal Cohort Studies."
+      },
+      { 
+        id: "GDI-3M19A7", 
+        name: "Marcus Vance", 
+        email: "m.vance@vancepartners.co", 
+        phone: "+1 (555) 871-3341", 
+        program: "Executive Doctorate of Business Administration", 
+        status: "Under Review", 
+        date: "2026-10-11",
+        qual: "MBA Finance & Strategy",
+        inst: "INSEAD",
+        exp: "14",
+        org: "Vance Global Strategy Group",
+        proposal: "Corporate Governance Dynamics and Capital Allocation Resilience in Multi-Tiered Supply Chain Disruptions."
+      },
+      { 
+        id: "GDI-7F45P2", 
+        name: "Elena Rostova", 
+        email: "e.rostova@eco-tech.eu", 
+        phone: "+44 20 7946 0912", 
+        program: "PhD Renewable Energy Systems", 
+        status: "Offer Issued", 
+        date: "2026-10-09",
+        qual: "M.Sc. Applied Thermodynamics",
+        inst: "Technical University of Munich",
+        exp: "5",
+        org: "Helios Clean Power",
+        proposal: "High-Efficiency Perovskite Tandem Solar Cells for Megawatt-Scale Desalination Facilities."
+      }
+    ];
+
+    const samplePrograms = [
+      { title: "Ph.D. in Computer Science & Artificial Intelligence", type: "phd", badge: "STEM Certified", topRank: true, desc: "Rigorous focus on neural architectures, machine learning theory, ethical AI protocols, and large scale distributed computing." },
+      { title: "Executive Doctorate of Business Administration (DBA)", type: "dba", badge: "Most Popular", topRank: false, desc: "Designed for senior executives seeking to solve complex managerial challenges through empirical research and corporate governance frameworks." },
+      { title: "Ph.D. in Global Health Policy & Epidemiology", type: "phd", badge: "Fully Funded", topRank: false, desc: "Addressing international healthcare infrastructure, infectious disease modeling, healthcare equity, and epidemiological statistics." },
+      { title: "Ph.D. in Renewable Energy Systems", type: "phd", badge: "Sponsored Track", topRank: true, desc: "Advanced empirical research in photovoltaic materials, grid integration, storage kinetics, and clean hydrogen transition." },
+      { title: "Executive DBA in Data-Driven Leadership", type: "dba", badge: "Hybrid Track", topRank: false, desc: "Synthesizing executive business intelligence, quantitative decision algorithms, behavioral economics, and strategic organizational design." },
+      { title: "Ph.D. in Industrial & Systems Engineering", type: "phd", badge: "Industry Partnered", topRank: false, desc: "Focusing on cyber-physical automation, supply chain digital twins, and additive manufacturing optimization." }
+    ];
+
+    let currentWizStep = 1;
+    let activeFilter = 'all';
+    let isAdminLoggedIn = false;
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      const bgColors = {
+        success: 'bg-emerald-600 text-white',
+        error: 'bg-red-600 text-white',
+        info: 'bg-gray-900 text-white'
+      };
+      const icons = {
+        success: 'fa-circle-check',
+        error: 'fa-circle-exclamation',
+        info: 'fa-circle-info'
+      };
+
+      toast.className = `${bgColors[type] || bgColors.info} p-3.5 rounded-xl text-xs font-semibold shadow-xl flex items-center gap-2 pointer-events-auto transform transition-all duration-300 translate-y-2 opacity-0`;
+      toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i> <span>${message}</span>`;
+      
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    function generateRefID() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = 'GDI-';
+      for (let i = 0; i < 6; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+
+    function showSection(sectionId) {
+      const home = document.getElementById('sec-home');
+      const tracker = document.getElementById('sec-tracker');
+      const admin = document.getElementById('sec-admin-panel');
+
+      if (home) home.classList.toggle('hidden', sectionId !== 'home');
+      if (tracker) tracker.classList.toggle('hidden', sectionId !== 'tracker');
+      if (admin) admin.classList.toggle('hidden', sectionId !== 'admin');
+
+      // Update Nav active indicator
+      const homeBtn = document.getElementById('nav-btn-home');
+      const trackBtn = document.getElementById('nav-btn-tracker');
+      if (homeBtn) homeBtn.className = sectionId === 'home' ? 'px-3 py-2 text-sm font-semibold text-orange-600 transition-colors' : 'px-3 py-2 text-sm font-semibold text-gray-700 hover:text-orange-600 transition-colors';
+      if (trackBtn) trackBtn.className = sectionId === 'tracker' ? 'px-3 py-2 text-sm font-semibold text-orange-600 transition-colors' : 'px-3 py-2 text-sm font-semibold text-gray-700 hover:text-orange-600 transition-colors';
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToPrograms() {
+      showSection('home');
+      const progSection = document.getElementById('programs-directory');
+      if (progSection) {
+        progSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      if (menu) menu.classList.toggle('hidden');
+    }
+
+    function selectTrack(track) {
+      const progSelect = document.getElementById('app-program');
+      if (!progSelect) return;
+      if (track === 'DBA') {
+        progSelect.value = "Executive Doctorate of Business Administration";
+      } else if (track === 'Online') {
+        progSelect.value = "Executive DBA Data-Driven Leadership";
+      } else {
+        progSelect.value = "PhD Computer Science & AI";
+      }
+    }
+
+    function setProgramFilter(filter) {
+      activeFilter = filter;
+      document.querySelectorAll('.prog-filter-btn').forEach(btn => {
+        btn.classList.remove('bg-orange-600', 'text-white', 'shadow-xs');
+        btn.classList.add('bg-gray-100', 'text-gray-600');
+      });
+
+      const activeBtn = document.getElementById(`filter-${filter}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-gray-100', 'text-gray-600');
+        activeBtn.classList.add('bg-orange-600', 'text-white', 'shadow-xs');
+      }
+
+      filterPrograms();
+    }
+
+    function filterPrograms() {
+      const searchInput = document.getElementById('prog-search');
+      const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+      const filtered = samplePrograms.filter(prog => {
+        const matchesFilter = activeFilter === 'all' || prog.type === activeFilter;
+        const matchesSearch = prog.title.toLowerCase().includes(query) || 
+                              prog.desc.toLowerCase().includes(query) || 
+                              prog.badge.toLowerCase().includes(query);
+        return matchesFilter && matchesSearch;
+      });
+
+      renderPrograms(filtered);
+    }
+
+    function renderPrograms(programsList) {
+      const grid = document.getElementById('program-cards-grid');
+      if (!grid) return;
+
+      if (programsList.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-white p-10 rounded-2xl border border-gray-200 text-center text-gray-500 space-y-2">
+            <i class="fa-solid fa-folder-open text-4xl text-gray-300"></i>
+            <p class="text-sm font-semibold">No doctoral programs found matching your query.</p>
+            <p class="text-xs text-gray-400">Try adjusting your search terms or clearing the filter.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = programsList.map(p => `
+        <div class="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-5 hover:border-orange-200">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] uppercase font-extrabold tracking-wider px-2.5 py-1 rounded-md bg-orange-50 text-orange-600 border border-orange-200/60">
+                ${p.badge}
+              </span>
+              ${p.topRank ? '<span class="text-xs text-amber-500 font-semibold flex items-center gap-1"><i class="fa-solid fa-star"></i> Featured</span>' : ''}
+            </div>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">${p.title}</h3>
+            <p class="text-gray-600 text-xs leading-relaxed">${p.desc}</p>
+          </div>
+
+          <div class="pt-4 border-t border-gray-100 flex items-center justify-between">
+            <button onclick="prefillAndOpenApply('${p.title}')" class="text-xs font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1.5 transition-colors">
+              <span>Apply Now</span>
+              <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </button>
+            <button onclick="openAiAdvisorForTopic('${p.title}')" class="text-xs text-gray-500 hover:text-gray-800 flex items-center gap-1.5 transition-colors">
+              <i class="fa-solid fa-wand-magic-sparkles text-orange-500"></i>
+              <span>AI Info</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function prefillAndOpenApply(programTitle) {
+      openApplyModal();
+      const progSelect = document.getElementById('app-program');
+      if (progSelect) {
+        for (let i = 0; i < progSelect.options.length; i++) {
+          if (programTitle.toLowerCase().includes(progSelect.options[i].text.toLowerCase().substring(0, 15))) {
+            progSelect.selectedIndex = i;
+            break;
+          }
+        }
+      }
+    }
+
+    function openApplyModal() {
+      currentWizStep = 1;
+      updateWizUI();
+      const errBox = document.getElementById('wiz-error-msg');
+      if (errBox) errBox.classList.add('hidden');
+      const modal = document.getElementById('apply-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeApplyModal() {
+      const modal = document.getElementById('apply-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function validateStep(step) {
+      const errBox = document.getElementById('wiz-error-msg');
+      const errText = document.getElementById('wiz-error-text');
+      if (errBox) errBox.classList.add('hidden');
+
+      if (step === 1) {
+        const name = document.getElementById('app-name').value.trim();
+        const email = document.getElementById('app-email').value.trim();
+        const phone = document.getElementById('app-phone').value.trim();
+
+        if (!name || !email || !phone) {
+          if (errBox) errBox.classList.remove('hidden');
+          if (errText) errText.textContent = 'Please provide your Full Name, Email, and Phone Number before continuing to Step 2.';
+          return false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          if (errBox) errBox.classList.remove('hidden');
+          if (errText) errText.textContent = 'Please enter a valid academic or professional email address.';
+          return false;
+        }
+      } else if (step === 2) {
+        const qual = document.getElementById('app-qual').value.trim();
+        const inst = document.getElementById('app-inst').value.trim();
+        const exp = document.getElementById('app-exp').value.trim();
+        const org = document.getElementById('app-org').value.trim();
+
+        if (!qual || !inst || !exp || !org) {
+          if (errBox) errBox.classList.remove('hidden');
+          if (errText) errText.textContent = 'All academic background fields (Highest Degree, Institution, Years of Experience, Current Organisation) are required.';
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function wizNext() {
+      if (!validateStep(currentWizStep)) return;
+      if (currentWizStep < 3) {
+        currentWizStep++;
+        updateWizUI();
+      }
+    }
+
+    function wizPrev() {
+      const errBox = document.getElementById('wiz-error-msg');
+      if (errBox) errBox.classList.add('hidden');
+      if (currentWizStep > 1) {
+        currentWizStep--;
+        updateWizUI();
+      }
+    }
+
+    function updateWizUI() {
+      const stepNum = document.getElementById('wiz-step-num');
+      if (stepNum) stepNum.textContent = currentWizStep;
+
+      document.getElementById('wiz-step-1').classList.toggle('hidden', currentWizStep !== 1);
+      document.getElementById('wiz-step-2').classList.toggle('hidden', currentWizStep !== 2);
+      document.getElementById('wiz-step-3').classList.toggle('hidden', currentWizStep !== 3);
+
+      document.getElementById('step-bar-1').className = `h-1.5 flex-1 rounded-full transition-all ${currentWizStep >= 1 ? 'bg-orange-600' : 'bg-gray-200'}`;
+      document.getElementById('step-bar-2').className = `h-1.5 flex-1 rounded-full transition-all ${currentWizStep >= 2 ? 'bg-orange-600' : 'bg-gray-200'}`;
+      document.getElementById('step-bar-3').className = `h-1.5 flex-1 rounded-full transition-all ${currentWizStep >= 3 ? 'bg-orange-600' : 'bg-gray-200'}`;
+
+      document.getElementById('wiz-prev-btn').classList.toggle('hidden', currentWizStep === 1);
+      document.getElementById('wiz-next-btn').classList.toggle('hidden', currentWizStep === 3);
+      document.getElementById('wiz-submit-btn').classList.toggle('hidden', currentWizStep !== 3);
+    }
+
+    function handleApplySubmit(e) {
+      if (e) e.preventDefault();
+
+      // Final step verification
+      const proposal = document.getElementById('app-proposal').value.trim();
+      const decl = document.getElementById('app-declaration').checked;
+      const errBox = document.getElementById('wiz-error-msg');
+      const errText = document.getElementById('wiz-error-text');
+
+      if (!proposal) {
+        if (errBox) errBox.classList.remove('hidden');
+        if (errText) errText.textContent = 'Please enter your proposed research topic abstract or problem statement.';
+        return;
+      }
+
+      if (!decl) {
+        if (errBox) errBox.classList.remove('hidden');
+        if (errText) errText.textContent = 'You must confirm the ethics declaration checkbox before submitting your application.';
+        return;
+      }
+
+      const newRef = generateRefID();
+      const name = document.getElementById('app-name').value.trim();
+      const email = document.getElementById('app-email').value.trim();
+      const phone = document.getElementById('app-phone').value.trim();
+      const prog = document.getElementById('app-program').value;
+      const qual = document.getElementById('app-qual').value.trim();
+      const inst = document.getElementById('app-inst').value.trim();
+      const exp = document.getElementById('app-exp').value.trim();
+      const org = document.getElementById('app-org').value.trim();
+
+      const newApp = {
+        id: newRef,
+        name: name,
+        email: email,
+        phone: phone,
+        program: prog,
+        status: "Application Submitted",
+        date: new Date().toISOString().split('T')[0],
+        qual: qual,
+        inst: inst,
+        exp: exp,
+        org: org,
+        proposal: proposal
+      };
+
+      // Add to beginning of records
+      applications.unshift(newApp);
+
+      // Reset form
+      document.getElementById('apply-form').reset();
+      currentWizStep = 1;
+      updateWizUI();
+      closeApplyModal();
+
+      // Refresh admin table and stats if open
+      updateAdminStats();
+      if (isAdminLoggedIn) renderAdminDashboard();
+
+      showToast(`Application successfully registered! Ref ID: ${newRef}`, 'success');
+
+      // Navigate to Tracker
+      showSection('tracker');
+      const trackInput = document.getElementById('track-id-input');
+      if (trackInput) {
+        trackInput.value = newRef;
+        trackApplication();
+      }
+    }
+
+    function quickTrack(id) {
+      const input = document.getElementById('track-id-input');
+      if (input) {
+        input.value = id;
+        trackApplication();
+      }
+    }
+
+    function trackApplication() {
+      const input = document.getElementById('track-id-input');
+      const id = input ? input.value.trim().toUpperCase() : '';
+      const resContainer = document.getElementById('track-result');
+      if (!resContainer) return;
+
+      resContainer.classList.remove('hidden');
+
+      if (!id) {
+        resContainer.innerHTML = `
+          <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-xs flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation text-base text-amber-600"></i>
+            <span>Please enter your Reference ID to inspect status.</span>
+          </div>
+        `;
+        return;
+      }
+
+      const found = applications.find(a => a.id.toUpperCase() === id);
+
+      if (!found) {
+        resContainer.innerHTML = `
+          <div class="p-5 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-xs space-y-1">
+            <div class="font-bold flex items-center gap-1.5 text-sm">
+              <i class="fa-solid fa-triangle-exclamation"></i> Reference ID Not Found
+            </div>
+            <p>We could not find an application matching "${id}". Please verify the code or submit a new proposal.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Progression Steps determination
+      const statusMap = {
+        "Application Submitted": 1,
+        "Under Review": 2,
+        "Interview Shortlisted": 3,
+        "Offer Issued": 4,
+        "Rejected": 0
+      };
+
+      const stageNumber = statusMap[found.status] !== undefined ? statusMap[found.status] : 1;
+
+      resContainer.innerHTML = `
+        <div class="bg-gray-50/80 p-6 sm:p-8 rounded-2xl border border-gray-200/80 space-y-6">
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-gray-200 pb-5">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-black text-orange-600 bg-orange-100 px-2.5 py-0.5 rounded">${found.id}</span>
+                <span class="text-xs text-gray-400">Registered: ${found.date}</span>
+              </div>
+              <h3 class="text-xl font-extrabold text-gray-900 mt-1">${found.name}</h3>
+              <p class="text-xs text-gray-600 font-medium">${found.program}</p>
+            </div>
+            <div>
+              <span class="px-4 py-2 font-bold text-xs rounded-full inline-flex items-center gap-1.5 shadow-xs ${
+                found.status === 'Offer Issued' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
+                found.status === 'Interview Shortlisted' ? 'bg-indigo-100 text-indigo-800 border border-indigo-300' :
+                found.status === 'Rejected' ? 'bg-red-100 text-red-800 border border-red-300' :
+                'bg-orange-100 text-orange-800 border border-orange-300'
+              }">
+                <i class="fa-solid fa-circle text-[8px]"></i>
+                ${found.status}
+              </span>
+            </div>
+          </div>
+
+          <!-- Visual 4-Step Progress Line -->
+          <div>
+            <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">Admissions Progression Status</h4>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+              <div class="p-3 rounded-xl border ${stageNumber >= 1 ? 'bg-orange-50 border-orange-300 text-orange-800' : 'bg-white border-gray-200 text-gray-400'}">
+                <div class="w-6 h-6 rounded-full mx-auto mb-1 flex items-center justify-center text-xs font-bold ${stageNumber >= 1 ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-600'}">1</div>
+                <div class="text-[11px] font-bold">Application</div>
+                <div class="text-[10px] text-gray-500">Form Received</div>
+              </div>
+
+              <div class="p-3 rounded-xl border ${stageNumber >= 2 ? 'bg-orange-50 border-orange-300 text-orange-800' : 'bg-white border-gray-200 text-gray-400'}">
+                <div class="w-6 h-6 rounded-full mx-auto mb-1 flex items-center justify-center text-xs font-bold ${stageNumber >= 2 ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-600'}">2</div>
+                <div class="text-[11px] font-bold">Shortlisting</div>
+                <div class="text-[10px] text-gray-500">Faculty Review</div>
+              </div>
+
+              <div class="p-3 rounded-xl border ${stageNumber >= 3 ? 'bg-orange-50 border-orange-300 text-orange-800' : 'bg-white border-gray-200 text-gray-400'}">
+                <div class="w-6 h-6 rounded-full mx-auto mb-1 flex items-center justify-center text-xs font-bold ${stageNumber >= 3 ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-600'}">3</div>
+                <div class="text-[11px] font-bold">Interview</div>
+                <div class="text-[10px] text-gray-500">Expert Panel</div>
+              </div>
+
+              <div class="p-3 rounded-xl border ${stageNumber >= 4 ? 'bg-emerald-50 border-emerald-300 text-emerald-800' : 'bg-white border-gray-200 text-gray-400'}">
+                <div class="w-6 h-6 rounded-full mx-auto mb-1 flex items-center justify-center text-xs font-bold ${stageNumber >= 4 ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-600'}">4</div>
+                <div class="text-[11px] font-bold">Selection</div>
+                <div class="text-[10px] text-gray-500">Offer Granted</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Dossier Summary -->
+          <div class="bg-white p-4 rounded-xl border border-gray-200 space-y-2 text-xs">
+            <h5 class="font-bold text-gray-800 uppercase tracking-wider text-[11px]">Submitted Research Summary</h5>
+            <p class="text-gray-600 italic">"${found.proposal || 'No abstract statement recorded.'}"</p>
+            <div class="pt-2 text-gray-500 flex flex-wrap gap-4 text-[11px]">
+              <span><strong>Prior Degree:</strong> ${found.qual || 'N/A'}</span>
+              <span><strong>Alma Mater:</strong> ${found.inst || 'N/A'}</span>
+              <span><strong>Organisation:</strong> ${found.org || 'N/A'}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function openAdminModal() {
+      if (isAdminLoggedIn) {
+        showSection('admin');
+        renderAdminDashboard();
+        return;
+      }
+      const modal = document.getElementById('admin-modal');
+      const err = document.getElementById('admin-err');
+      if (err) err.classList.add('hidden');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeAdminModal() {
+      const modal = document.getElementById('admin-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function fillAdminCredentials() {
+      document.getElementById('admin-id').value = 'admin@2000';
+      document.getElementById('admin-pass').value = 'KA18SDA370502';
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const id = document.getElementById('admin-id').value.trim();
+      const pass = document.getElementById('admin-pass').value.trim();
+
+      if (id === 'admin@2000' && pass === 'KA18SDA370502') {
+        isAdminLoggedIn = true;
+        document.getElementById('admin-err').classList.add('hidden');
+        closeAdminModal();
+
+        // Update nav badge
+        const navLabel = document.getElementById('nav-admin-label');
+        if (navLabel) navLabel.innerHTML = `Admin <span class="bg-emerald-500 text-white text-[9px] px-1.5 py-0.2 rounded font-mono">ACTIVE</span>`;
+
+        showToast('Admin access authorized. Welcome to the Control Center.', 'success');
+        showSection('admin');
+        renderAdminDashboard();
+      } else {
+        document.getElementById('admin-err').classList.remove('hidden');
+      }
+    }
+
+    function handleAdminLogout() {
+      isAdminLoggedIn = false;
+      const navLabel = document.getElementById('nav-admin-label');
+      if (navLabel) navLabel.textContent = 'Admin Portal';
+      showToast('Logged out of Admin Session.', 'info');
+      showSection('home');
+    }
+
+    function updateAdminStats() {
+      const total = applications.length;
+      const pending = applications.filter(a => a.status === 'Under Review' || a.status === 'Application Submitted').length;
+      const interview = applications.filter(a => a.status === 'Interview Shortlisted').length;
+      const accepted = applications.filter(a => a.status === 'Offer Issued').length;
+
+      const tElem = document.getElementById('stat-total-apps');
+      const pElem = document.getElementById('stat-pending-apps');
+      const iElem = document.getElementById('stat-interview-apps');
+      const aElem = document.getElementById('stat-accepted-apps');
+
+      if (tElem) tElem.textContent = total;
+      if (pElem) pElem.textContent = pending;
+      if (iElem) iElem.textContent = interview;
+      if (aElem) aElem.textContent = accepted;
+    }
+
+    function renderAdminDashboard() {
+      updateAdminStats();
+      const tbody = document.getElementById('admin-table-body');
+      const emptyMsg = document.getElementById('admin-table-empty');
+      const searchVal = document.getElementById('admin-search')?.value.toLowerCase().trim() || '';
+      const filterVal = document.getElementById('admin-status-filter')?.value || 'ALL';
+
+      if (!tbody) return;
+
+      const filtered = applications.filter(app => {
+        const matchesSearch = app.name.toLowerCase().includes(searchVal) ||
+                              app.id.toLowerCase().includes(searchVal) ||
+                              app.program.toLowerCase().includes(searchVal);
+        const matchesStatus = filterVal === 'ALL' || app.status === filterVal;
+        return matchesSearch && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        if (emptyMsg) emptyMsg.classList.remove('hidden');
+        return;
+      }
+
+      if (emptyMsg) emptyMsg.classList.add('hidden');
+
+      tbody.innerHTML = filtered.map(app => `
+        <tr class="hover:bg-gray-50/80 transition-colors">
+          <td class="px-6 py-4">
+            <span class="font-mono font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">${app.id}</span>
+          </td>
+          <td class="px-6 py-4">
+            <div class="font-bold text-gray-900">${app.name}</div>
+            <div class="text-[11px] text-gray-500">${app.email || 'N/A'} &bull; ${app.phone || 'N/A'}</div>
+          </td>
+          <td class="px-6 py-4 text-gray-700">
+            ${app.program}
+          </td>
+          <td class="px-6 py-4 text-gray-500">
+            ${app.date}
+          </td>
+          <td class="px-6 py-4">
+            <select onchange="updateApplicationStatus('${app.id}', this.value)" class="text-xs font-semibold rounded-lg px-2.5 py-1.5 border border-gray-300 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none ${
+              app.status === 'Offer Issued' ? 'text-emerald-700 bg-emerald-50 border-emerald-300' :
+              app.status === 'Interview Shortlisted' ? 'text-indigo-700 bg-indigo-50 border-indigo-300' :
+              app.status === 'Rejected' ? 'text-red-700 bg-red-50 border-red-300' :
+              'text-orange-700 bg-orange-50 border-orange-300'
+            }">
+              <option value="Application Submitted" ${app.status === 'Application Submitted' ? 'selected' : ''}>Application Submitted</option>
+              <option value="Under Review" ${app.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
+              <option value="Interview Shortlisted" ${app.status === 'Interview Shortlisted' ? 'selected' : ''}>Interview Shortlisted</option>
+              <option value="Offer Issued" ${app.status === 'Offer Issued' ? 'selected' : ''}>Offer Issued</option>
+              <option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+            </select>
+          </td>
+          <td class="px-6 py-4 text-center">
+            <div class="flex items-center justify-center gap-2">
+              <button onclick="openDossierModal('${app.id}')" class="p-1.5 text-gray-500 hover:text-orange-600 bg-gray-100 hover:bg-orange-50 rounded-lg transition-colors" title="View Full Dossier">
+                <i class="fa-solid fa-file-lines text-sm"></i>
+              </button>
+              <button onclick="deleteApplication('${app.id}')" class="p-1.5 text-gray-400 hover:text-red-600 bg-gray-100 hover:bg-red-50 rounded-lg transition-colors" title="Remove Application">
+                <i class="fa-solid fa-trash-can text-sm"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function updateApplicationStatus(id, newStatus) {
+      const app = applications.find(a => a.id === id);
+      if (app) {
+        app.status = newStatus;
+        updateAdminStats();
+        showToast(`Status for ${id} updated to "${newStatus}"`, 'success');
+      }
+    }
+
+    function deleteApplication(id) {
+      const idx = applications.findIndex(a => a.id === id);
+      if (idx !== -1) {
+        const removed = applications.splice(idx, 1)[0];
+        renderAdminDashboard();
+        showToast(`Dossier ${removed.id} archived from current registry.`, 'info');
+      }
+    }
+
+    function openDossierModal(appId) {
+      const app = applications.find(a => a.id === appId);
+      if (!app) return;
+
+      const content = document.getElementById('dossier-content');
+      content.innerHTML = `
+        <div class="space-y-4">
+          <div class="flex items-start justify-between border-b pb-4">
+            <div>
+              <span class="text-xs font-mono font-bold text-orange-600 bg-orange-100 px-2.5 py-0.5 rounded">${app.id}</span>
+              <h3 class="text-xl font-bold text-gray-900 mt-1">${app.name}</h3>
+              <p class="text-xs text-gray-500">${app.program}</p>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md">Status: ${app.status}</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <span class="text-gray-400 block font-medium">Email</span>
+              <span class="font-bold text-gray-800">${app.email || 'N/A'}</span>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <span class="text-gray-400 block font-medium">Phone</span>
+              <span class="font-bold text-gray-800">${app.phone || 'N/A'}</span>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <span class="text-gray-400 block font-medium">Prior Degree & Alma Mater</span>
+              <span class="font-bold text-gray-800">${app.qual || 'N/A'} &bull; ${app.inst || 'N/A'}</span>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <span class="text-gray-400 block font-medium">Experience & Organisation</span>
+              <span class="font-bold text-gray-800">${app.exp || '0'} Years &bull; ${app.org || 'N/A'}</span>
+            </div>
+          </div>
+
+          <div class="p-4 bg-orange-50/50 rounded-2xl border border-orange-100 space-y-1.5">
+            <h5 class="text-xs font-bold text-orange-950 uppercase tracking-wider">Research Proposal Synopsis</h5>
+            <p class="text-xs text-gray-700 leading-relaxed">${app.proposal || 'No research proposal attached.'}</p>
+          </div>
+
+          <div class="pt-2 flex justify-end">
+            <button onclick="closeDossierModal()" class="px-5 py-2 bg-gray-900 hover:bg-black text-white text-xs font-semibold rounded-xl transition-colors">
+              Close Dossier
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('dossier-modal').classList.remove('hidden');
+    }
+
+    function closeDossierModal() {
+      document.getElementById('dossier-modal').classList.add('hidden');
+    }
+
+    function exportApplicationsToCSV() {
+      if (applications.length === 0) {
+        showToast('No applications available to export.', 'info');
+        return;
+      }
+
+      const headers = ['RefID', 'Name', 'Email', 'Phone', 'Program', 'Status', 'Date', 'PriorDegree', 'Institution', 'ExperienceYears', 'Organisation'];
+      const rows = applications.map(a => [
+        `"${a.id}"`,
+        `"${a.name}"`,
+        `"${a.email || ''}"`,
+        `"${a.phone || ''}"`,
+        `"${a.program}"`,
+        `"${a.status}"`,
+        `"${a.date}"`,
+        `"${a.qual || ''}"`,
+        `"${a.inst || ''}"`,
+        `"${a.exp || ''}"`,
+        `"${a.org || ''}"`
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `GDI_Doctoral_Applications_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showToast('Exported CSV file successfully.', 'success');
+    }
+
+    function openAiAdvisorModal() {
+      document.getElementById('ai-advisor-modal').classList.remove('hidden');
+    }
+
+    function closeAiAdvisorModal() {
+      document.getElementById('ai-advisor-modal').classList.add('hidden');
+    }
+
+    function openAiAdvisorForTopic(topicTitle) {
+      openAiAdvisorModal();
+      const input = document.getElementById('ai-query-input');
+      if (input) {
+        input.value = `Tell me about admissions, prerequisites, and thesis requirements for ${topicTitle}.`;
+        sendAiQuery();
+      }
+    }
+
+    async function sendAiQuery() {
+      const input = document.getElementById('ai-query-input');
+      const chatBox = document.getElementById('ai-chat-box');
+      const sendBtn = document.getElementById('ai-send-btn');
+      const userText = input.value.trim();
+
+      if (!userText) return;
+
+      chatBox.innerHTML += `
+        <div class="flex justify-end">
+          <div class="bg-orange-600 text-white p-3 rounded-2xl max-w-[85%] shadow-xs">
+            ${userText}
+          </div>
+        </div>
+      `;
+      input.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      const loadingId = 'ai-loading-' + Date.now();
+      chatBox.innerHTML += `
+        <div id="${loadingId}" class="bg-gray-800/80 text-orange-400 p-3 rounded-2xl max-w-[85%] border border-gray-700 flex items-center gap-2">
+          <i class="fa-solid fa-circle-notch animate-spin"></i> Gemini is analyzing academic guidance...
+        </div>
+      `;
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      sendBtn.disabled = true;
+
+      try {
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+        const systemPrompt = "You are a distinguished Senior Academic Advisor and Dean of Admissions at the Global Doctoral Institute. Provide concise, expert, and encouraging doctoral guidance (2-4 sentences max) covering PhD prerequisites, Executive DBA admissions criteria, research proposal formulation, publication ethics, supervisor matching, and scholarship options.";
+
+        const payload = {
+          contents: [{ parts: [{ text: userText }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] }
+        };
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        const aiAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        const loadingElem = document.getElementById(loadingId);
+        if (loadingElem) {
+          if (aiAnswer) {
+            loadingElem.className = "bg-gray-800/80 text-gray-200 p-3.5 rounded-2xl max-w-[85%] border border-gray-700";
+            loadingElem.innerHTML = `🎓 ${aiAnswer}`;
+          } else {
+            throw new Error("No response candidate");
+          }
+        }
+      } catch (err) {
+        const loadingElem = document.getElementById(loadingId);
+        if (loadingElem) {
+          loadingElem.className = "bg-orange-950/80 text-orange-200 p-3.5 rounded-2xl max-w-[85%] border border-orange-800/60 space-y-1";
+          loadingElem.innerHTML = `
+            <div class="font-bold flex items-center gap-1.5 text-orange-400">
+              <i class="fa-solid fa-graduation-cap"></i> Doctoral Academic Guidance
+            </div>
+            <div>Applicants holding a recognized Master's degree (or equivalent executive tenure of 5+ years) are eligible for direct committee evaluation. Ensure your research proposal outlines a clear methodology, literature gap, and real-world impact. You can submit your proposal directly through our 3-Step Wizard or email <span class="underline">admissions@doctoral-institute.org</span>.</div>
+          `;
+        }
+      } finally {
+        sendBtn.disabled = false;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      filterPrograms();
+      updateAdminStats();
+    });
+  </script>
+</body>
+</html>
