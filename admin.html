@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control Panel - PhD Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .login-container, .dashboard-container {
+            max-width: 400px;
+            margin: 80px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .dashboard-container {
+            max-width: 800px;
+            display: none; /* Hidden by default */
+        }
+        h2 { color: #f97316; margin-top: 0; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #f97316;
+            color: white;
+            padding: 10px;
+            border: none;
+            width: 100%;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover { background-color: #ea580c; }
+        .error { color: red; font-size: 14px; margin-bottom: 10px; }
+        .logout-btn { background-color: #ef4444; width: auto; padding: 5px 15px; float: right; }
+    </style>
+</head>
+<body>
+
+    <!-- Login Form -->
+    <div class="login-container" id="loginSection">
+        <h2>Admin Login</h2>
+        <div id="errorMessage" class="error"></div>
+        <label for="username">Admin ID</label>
+        <input type="text" id="username" placeholder="Enter Admin ID">
+        
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter Password">
+        
+        <button onclick="handleLogin()">Login</button>
+    </div>
+
+    <!-- Admin Dashboard (Control Panel) -->
+    <div class="dashboard-container" id="dashboardSection">
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        <h2>PhD Portal Control Panel</h2>
+        <p>Welcome, Administrator! Here you can manage applications, view student submissions, and update portal settings.</p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+        <h3>Quick Stats</h3>
+        <ul>
+            <li>Total Applications: <strong>0</strong></li>
+            <li>Pending Reviews: <strong>0</strong></li>
+        </ul>
+    </div>
+
+    <script>
+        // Credentials check
+        const ADMIN_ID = "admin@2000";
+        const ADMIN_PASS = "KA18SDA370502";
+
+        // Check if already logged in on page load
+        window.onload = function() {
+            if (localStorage.getItem("isAdminLoggedIn") === "true") {
+                showDashboard();
+            }
+        };
+
+        function handleLogin() {
+            const user = document.getElementById("username").value;
+            const pass = document.getElementById("password").value;
+            const errorDiv = document.getElementById("errorMessage");
+
+            if (user === ADMIN_ID && pass === ADMIN_PASS) {
+                localStorage.setItem("isAdminLoggedIn", "true");
+                showDashboard();
+            } else {
+                errorDiv.innerText = "Invalid Admin ID or Password!";
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById("loginSection").style.display = "none";
+            document.getElementById("dashboardSection").style.display = "block";
+        }
+
+        function handleLogout() {
+            localStorage.removeItem("isAdminLoggedIn");
+            document.getElementById("dashboardSection").style.display = "none";
+            document.getElementById("loginSection").style.display = "block";
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+            document.getElementById("errorMessage").innerText = "";
+        }
+    </script>
+</body>
+</html>
