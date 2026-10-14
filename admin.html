@@ -1,118 +1,505 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Control Panel - PhD Portal</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 0;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Center | PhD Centralised Portal</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#EA580C',
+            'brand-dark': '#C2410C',
+            'slate-panel': '#1F242D',
+            'slate-surface': '#2A303C'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
         }
-        .login-container, .dashboard-container {
-            max-width: 400px;
-            margin: 80px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .dashboard-container {
-            max-width: 800px;
-            display: none; /* Hidden by default */
-        }
-        h2 { color: #f97316; margin-top: 0; }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0 20px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #f97316;
-            color: white;
-            padding: 10px;
-            border: none;
-            width: 100%;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover { background-color: #ea580c; }
-        .error { color: red; font-size: 14px; margin-bottom: 10px; }
-        .logout-btn { background-color: #ef4444; width: auto; padding: 5px 15px; float: right; }
-    </style>
+      }
+    }
+  </script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
 </head>
-<body>
+<body class="bg-[#F3F4F6] text-gray-800 antialiased min-h-screen flex flex-col selection:bg-orange-500 selection:text-white">
 
-    <!-- Login Form -->
-    <div class="login-container" id="loginSection">
-        <h2>Admin Login</h2>
-        <div id="errorMessage" class="error"></div>
-        <label for="username">Admin ID</label>
-        <input type="text" id="username" placeholder="Enter Admin ID">
-        
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter Password">
-        
-        <button onclick="handleLogin()">Login</button>
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 via-orange-600 to-amber-700 text-white font-black text-xl flex items-center justify-center shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
+          P
+        </div>
+        <div>
+          <span class="font-bold text-lg text-gray-900 block leading-tight">PhD Centralised Portal</span>
+          <span class="text-xs text-gray-500 font-medium">Admin Control Center</span>
+        </div>
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="px-3.5 py-2 text-sm font-semibold text-gray-700 hover:text-orange-600 border border-gray-300 rounded-xl bg-gray-50 transition-all flex items-center gap-2">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Exit to Portal</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-section" class="max-w-md mx-auto bg-white p-8 sm:p-10 rounded-3xl border border-gray-200 shadow-xl space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl mx-auto flex items-center justify-center text-xl font-bold shadow-xs">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h2 class="text-2xl font-extrabold text-gray-900">Admin Authentication</h2>
+        <p class="text-xs text-gray-500">Enter secure administrative credentials to manage applications.</p>
+      </div>
+
+      <div id="error-msg" class="hidden p-3 bg-red-50 border border-red-200 text-red-600 text-xs rounded-xl font-medium text-center"></div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Admin ID</label>
+          <input type="text" id="admin-id" placeholder="admin@2000" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Password</label>
+          <input type="password" id="admin-pass" placeholder="••••••••••••" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all">
+        </div>
+        <button onclick="handleAdminLogin()" class="w-full py-3.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl shadow-lg shadow-orange-600/30 transition-all">
+          Access Control Center
+        </button>
+      </div>
     </div>
 
-    <!-- Admin Dashboard (Control Panel) -->
-    <div class="dashboard-container" id="dashboardSection">
-        <button class="logout-btn" onclick="handleLogout()">Logout</button>
-        <h2>PhD Portal Control Panel</h2>
-        <p>Welcome, Administrator! Here you can manage applications, view student submissions, and update portal settings.</p>
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-        <h3>Quick Stats</h3>
-        <ul>
-            <li>Total Applications: <strong>0</strong></li>
-            <li>Pending Reviews: <strong>0</strong></li>
-        </ul>
+    <!-- DASHBOARD PANEL (Hidden until authenticated) -->
+    <div id="dashboard-section" class="hidden space-y-8">
+      
+      <!-- Admin Bar Header -->
+      <div class="bg-[#1F242D] text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-gray-700/80 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs font-bold tracking-wider uppercase text-emerald-400">Authenticated Admin Session</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Admissions Central Control Center</h2>
+          <p class="text-gray-400 text-xs sm:text-sm mt-1">Review candidates, update admission statuses, evaluate briefs, and export data.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <button onclick="exportApplicationsToCSV()" class="px-4 py-2.5 bg-gray-700/70 hover:bg-gray-700 text-gray-200 text-xs font-semibold rounded-xl border border-gray-600 transition-all flex items-center gap-2">
+            <i class="fa-solid fa-file-csv text-emerald-400"></i> Export CSV
+          </button>
+          <button onclick="handleAdminLogout()" class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2 shadow-xs">
+            <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick KPI Stats Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <div class="flex justify-between items-start">
+            <p class="text-xs font-bold uppercase text-gray-400">Total Applicants</p>
+            <span class="p-2 bg-orange-50 text-orange-600 rounded-lg text-xs"><i class="fa-solid fa-users"></i></span>
+          </div>
+          <h3 id="stat-total-apps" class="text-2xl sm:text-3xl font-black text-gray-900 mt-2">0</h3>
+          <span class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1 mt-1">
+            <i class="fa-solid fa-arrow-trend-up"></i> Live Synchronized
+          </span>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <div class="flex justify-between items-start">
+            <p class="text-xs font-bold uppercase text-gray-400">Under Review</p>
+            <span class="p-2 bg-amber-50 text-amber-600 rounded-lg text-xs"><i class="fa-solid fa-hourglass-half"></i></span>
+          </div>
+          <h3 id="stat-pending-apps" class="text-2xl sm:text-3xl font-black text-amber-600 mt-2">0</h3>
+          <span class="text-[11px] text-gray-500 font-medium mt-1 block">Awaiting Evaluation</span>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <div class="flex justify-between items-start">
+            <p class="text-xs font-bold uppercase text-gray-400">Interview Shortlist</p>
+            <span class="p-2 bg-indigo-50 text-indigo-600 rounded-lg text-xs"><i class="fa-solid fa-user-tie"></i></span>
+          </div>
+          <h3 id="stat-interview-apps" class="text-2xl sm:text-3xl font-black text-indigo-600 mt-2">0</h3>
+          <span class="text-[11px] text-gray-500 font-medium mt-1 block">Faculty Panel Assigned</span>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <div class="flex justify-between items-start">
+            <p class="text-xs font-bold uppercase text-gray-400">Offers Granted</p>
+            <span class="p-2 bg-emerald-50 text-emerald-600 rounded-lg text-xs"><i class="fa-solid fa-award"></i></span>
+          </div>
+          <h3 id="stat-accepted-apps" class="text-2xl sm:text-3xl font-black text-emerald-600 mt-2">0</h3>
+          <span class="text-[11px] text-emerald-600 font-medium mt-1 block">Final Selection Complete</span>
+        </div>
+      </div>
+
+      <!-- Applicant Registry Table -->
+      <div class="bg-white rounded-3xl border border-gray-200/80 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-gray-50/50">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">Registered Candidate Pipeline</h3>
+            <p class="text-xs text-gray-500">Real-time status updates instantly reflect on applicant status trackers.</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+              <input type="text" id="admin-search" oninput="renderAdminDashboard()" placeholder="Search name / ID..." class="pl-8 pr-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none">
+            </div>
+            <select id="admin-status-filter" onchange="renderAdminDashboard()" class="text-xs border border-gray-200 rounded-lg px-3 py-1.5 bg-white font-medium focus:ring-2 focus:ring-orange-500 focus:outline-none">
+              <option value="ALL">All Statuses</option>
+              <option value="Application Submitted">Application Submitted</option>
+              <option value="Under Review">Under Review</option>
+              <option value="Interview Shortlisted">Interview Shortlisted</option>
+              <option value="Offer Issued">Offer Issued</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-gray-50 text-gray-600 font-bold uppercase tracking-wider border-b border-gray-200">
+              <tr>
+                <th class="px-6 py-3.5">Ref ID</th>
+                <th class="px-6 py-3.5">Applicant Details</th>
+                <th class="px-6 py-3.5">Program Track</th>
+                <th class="px-6 py-3.5">Date</th>
+                <th class="px-6 py-3.5">Current Status</th>
+                <th class="px-6 py-3.5 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-table-body" class="divide-y divide-gray-100 font-medium">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="admin-table-empty" class="hidden p-8 text-center text-gray-500 space-y-2">
+          <i class="fa-solid fa-inbox text-3xl text-gray-300"></i>
+          <p class="text-xs">No candidate applications found matching query.</p>
+        </div>
+      </div>
+
     </div>
 
-    <script>
-        // Credentials check
-        const ADMIN_ID = "admin@2000";
-        const ADMIN_PASS = "KA18SDA370502";
+  </main>
 
-        // Check if already logged in on page load
-        window.onload = function() {
-            if (localStorage.getItem("isAdminLoggedIn") === "true") {
-                showDashboard();
-            }
-        };
+  <!-- Dossier / Status Modal -->
+  <div id="admin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+        <div>
+          <span id="modal-ref" class="text-xs font-mono font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200"></span>
+          <h3 class="text-xl font-extrabold text-gray-900 mt-1">Candidate Dossier Review</h3>
+        </div>
+        <button onclick="closeAdminModal()" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center font-bold">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
 
-        function handleLogin() {
-            const user = document.getElementById("username").value;
-            const pass = document.getElementById("password").value;
-            const errorDiv = document.getElementById("errorMessage");
+      <div id="modal-content" class="space-y-4 text-xs">
+        <!-- Populated dynamically -->
+      </div>
 
-            if (user === ADMIN_ID && pass === ADMIN_PASS) {
-                localStorage.setItem("isAdminLoggedIn", "true");
-                showDashboard();
-            } else {
-                errorDiv.innerText = "Invalid Admin ID or Password!";
-            }
+      <div class="border-t border-gray-100 pt-4 space-y-3">
+        <label class="block font-bold text-gray-700 text-xs uppercase">Update Application Status</label>
+        <div class="flex gap-2">
+          <select id="modal-status-select" class="flex-1 px-3 py-2 border border-gray-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-orange-500 focus:outline-none">
+            <option value="Application Submitted">Application Submitted</option>
+            <option value="Under Review">Under Review</option>
+            <option value="Interview Shortlisted">Interview Shortlisted</option>
+            <option value="Offer Issued">Offer Issued</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+          <button onclick="saveApplicationStatus()" class="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl shadow-md transition-all">
+            Update Status
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-[#181B20] text-gray-400 py-6 text-center text-xs border-t border-gray-800">
+    &copy; 2026 PhD Centralised Portal. Admin Control Desk.
+  </footer>
+
+  <script>
+    const ADMIN_ID = "admin@2000";
+    const ADMIN_PASS = "KA18SDA370502";
+    let currentSelectedId = null;
+
+    // Default sample applications if none exist in localStorage
+    const defaultApps = [
+      {
+        id: "GDI-8X92K4",
+        name: "Dr. Eleanor Vance",
+        email: "eleanor.vance@research.edu",
+        program: "Ph.D. in Artificial Intelligence & Machine Learning",
+        studyMode: "Full-time, on-campus PhD",
+        date: "2026-04-12",
+        status: "Under Review",
+        proposal: "Investigation into neural network interpretability models in critical diagnostic health settings."
+      },
+      {
+        id: "GDI-3M19A7",
+        name: "Marcus Sterling",
+        email: "m.sterling@globalcorp.org",
+        program: "Executive Doctorate in Business Administration (DBA)",
+        studyMode: "DBA or executive doctorate",
+        date: "2026-04-14",
+        status: "Interview Shortlisted",
+        proposal: "Strategic agility and organizational resilience in multinational supply chain disruptions."
+      }
+    ];
+
+    window.onload = function() {
+      if (!localStorage.getItem("phdApplications")) {
+        localStorage.setItem("phdApplications", JSON.stringify(defaultApps));
+      }
+
+      if (localStorage.getItem("phdAdminLoggedIn") === "true") {
+        showDashboard();
+      }
+    };
+
+    function handleAdminLogin() {
+      const id = document.getElementById("admin-id").value.trim();
+      const pass = document.getElementById("admin-pass").value.trim();
+      const err = document.getElementById("error-msg");
+
+      if (id === ADMIN_ID && pass === ADMIN_PASS) {
+        localStorage.setItem("phdAdminLoggedIn", "true");
+        err.classList.add("hidden");
+        showDashboard();
+        showToast("Welcome back, Administrator!", "success");
+      } else {
+        err.innerText = "Invalid Admin ID or Password. Please verify your credentials.";
+        err.classList.remove("hidden");
+      }
+    }
+
+    function showDashboard() {
+      document.getElementById("login-section").classList.add("hidden");
+      document.getElementById("dashboard-section").classList.remove("hidden");
+      renderAdminDashboard();
+    }
+
+    function handleAdminLogout() {
+      localStorage.removeItem("phdAdminLoggedIn");
+      document.getElementById("dashboard-section").classList.add("hidden");
+      document.getElementById("login-section").classList.remove("hidden");
+      document.getElementById("admin-id").value = "";
+      document.getElementById("admin-pass").value = "";
+      showToast("Signed out successfully.", "info");
+    }
+
+    function getApplications() {
+      return JSON.parse(localStorage.getItem("phdApplications")) || [];
+    }
+
+    function renderAdminDashboard() {
+      const apps = getApplications();
+      const search = document.getElementById("admin-search").value.toLowerCase();
+      const statusFilter = document.getElementById("admin-status-filter").value;
+
+      // Update KPI counters
+      document.getElementById("stat-total-apps").innerText = apps.length;
+      document.getElementById("stat-pending-apps").innerText = apps.filter(a => a.status === "Under Review" || a.status === "Application Submitted").length;
+      document.getElementById("stat-interview-apps").innerText = apps.filter(a => a.status === "Interview Shortlisted").length;
+      document.getElementById("stat-accepted-apps").innerText = apps.filter(a => a.status === "Offer Issued").length;
+
+      // Filter apps
+      const filtered = apps.filter(app => {
+        const matchesSearch = app.id.toLowerCase().includes(search) || app.name.toLowerCase().includes(search) || app.email.toLowerCase().includes(search);
+        const matchesStatus = statusFilter === "ALL" || app.status === statusFilter;
+        return matchesSearch && matchesStatus;
+      });
+
+      const tbody = document.getElementById("admin-table-body");
+      const emptyState = document.getElementById("admin-table-empty");
+      tbody.innerHTML = "";
+
+      if (filtered.length === 0) {
+        emptyState.classList.remove("hidden");
+        return;
+      }
+      emptyState.classList.add("hidden");
+
+      filtered.forEach(app => {
+        let statusBadgeColor = "bg-gray-100 text-gray-700 border-gray-200";
+        if (app.status === "Under Review") statusBadgeColor = "bg-amber-50 text-amber-700 border-amber-200";
+        if (app.status === "Interview Shortlisted") statusBadgeColor = "bg-indigo-50 text-indigo-700 border-indigo-200";
+        if (app.status === "Offer Issued") statusBadgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+        if (app.status === "Rejected") statusBadgeColor = "bg-red-50 text-red-700 border-red-200";
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-gray-50/80 transition-colors";
+        tr.innerHTML = `
+          <td class="px-6 py-4 font-mono font-bold text-orange-600">${app.id}</td>
+          <td class="px-6 py-4">
+            <div class="font-bold text-gray-900">${app.name}</div>
+            <div class="text-[11px] text-gray-500">${app.email}</div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="font-medium text-gray-800 line-clamp-1">${app.program}</div>
+            <div class="text-[10px] text-gray-400">${app.studyMode || 'Standard Track'}</div>
+          </td>
+          <td class="px-6 py-4 text-gray-500 font-mono">${app.date}</td>
+          <td class="px-6 py-4">
+            <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold border ${statusBadgeColor}">
+              ${app.status}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-center">
+            <div class="flex items-center justify-center gap-2">
+              <button onclick="openAdminModal('${app.id}')" class="px-3 py-1.5 bg-gray-100 hover:bg-orange-50 hover:text-orange-600 text-gray-700 rounded-lg font-semibold transition-colors">
+                <i class="fa-solid fa-eye me-1"></i> Dossier
+              </button>
+              <button onclick="deleteApplication('${app.id}')" class="p-1.5 text-gray-400 hover:text-red-600 rounded-lg transition-colors" title="Delete Application">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openAdminModal(appId) {
+      const apps = getApplications();
+      const app = apps.find(a => a.id === appId);
+      if (!app) return;
+
+      currentSelectedId = appId;
+      document.getElementById("modal-ref").innerText = app.id;
+      document.getElementById("modal-status-select").value = app.status;
+
+      const content = document.getElementById("modal-content");
+      content.innerHTML = `
+        <div class="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-200">
+          <div>
+            <span class="text-gray-400 font-bold uppercase text-[10px] block">Full Name</span>
+            <strong class="text-gray-900 text-sm">${app.name}</strong>
+          </div>
+          <div>
+            <span class="text-gray-400 font-bold uppercase text-[10px] block">Email Address</span>
+            <span class="text-gray-700">${app.email}</span>
+          </div>
+          <div>
+            <span class="text-gray-400 font-bold uppercase text-[10px] block">Program Track</span>
+            <span class="text-gray-800 font-medium">${app.program}</span>
+          </div>
+          <div>
+            <span class="text-gray-400 font-bold uppercase text-[10px] block">Study Mode</span>
+            <span class="text-gray-800">${app.studyMode || 'N/A'}</span>
+          </div>
+        </div>
+        <div>
+          <span class="text-gray-500 font-bold uppercase text-[10px] block mb-1">Research Proposal & Abstract</span>
+          <div class="p-4 bg-gray-50 rounded-2xl border border-gray-200 text-gray-700 leading-relaxed font-normal">
+            ${app.proposal || 'No research proposal summary provided.'}
+          </div>
+        </div>
+      `;
+
+      document.getElementById("admin-modal").classList.remove("hidden");
+    }
+
+    function closeAdminModal() {
+      document.getElementById("admin-modal").classList.add("hidden");
+      currentSelectedId = null;
+    }
+
+    function saveApplicationStatus() {
+      if (!currentSelectedId) return;
+      const newStatus = document.getElementById("modal-status-select").value;
+      let apps = getApplications();
+      
+      apps = apps.map(app => {
+        if (app.id === currentSelectedId) {
+          app.status = newStatus;
         }
+        return app;
+      });
 
-        function showDashboard() {
-            document.getElementById("loginSection").style.display = "none";
-            document.getElementById("dashboardSection").style.display = "block";
-        }
+      localStorage.setItem("phdApplications", JSON.stringify(apps));
+      closeAdminModal();
+      renderAdminDashboard();
+      showToast(`Application ${currentSelectedId} updated to "${newStatus}"`, "success");
+    }
 
-        function handleLogout() {
-            localStorage.removeItem("isAdminLoggedIn");
-            document.getElementById("dashboardSection").style.display = "none";
-            document.getElementById("loginSection").style.display = "block";
-            document.getElementById("username").value = "";
-            document.getElementById("password").value = "";
-            document.getElementById("errorMessage").innerText = "";
-        }
-    </script>
+    function deleteApplication(appId) {
+      if (!confirm(`Are you sure you want to delete application ${appId}?`)) return;
+      let apps = getApplications();
+      apps = apps.filter(a => a.id !== appId);
+      localStorage.setItem("phdApplications", JSON.stringify(apps));
+      renderAdminDashboard();
+      showToast(`Application ${appId} deleted.`, "info");
+    }
+
+    function exportApplicationsToCSV() {
+      const apps = getApplications();
+      if (apps.length === 0) {
+        showToast("No applications available to export.", "info");
+        return;
+      }
+
+      let csvContent = "data:text/csv;charset=utf-8,Reference ID,Full Name,Email,Program,Study Mode,Submission Date,Status\n";
+      apps.forEach(app => {
+        csvContent += `"${app.id}","${app.name}","${app.email}","${app.program}","${app.studyMode || ''}","${app.date}","${app.status}"\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "PhD_Applicants_Export.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("CSV cohort export downloaded successfully.", "success");
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let bg = 'bg-gray-900 text-white';
+      if (type === 'success') bg = 'bg-emerald-600 text-white';
+      if (type === 'info') bg = 'bg-blue-600 text-white';
+
+      toast.className = `${bg} px-4 py-3 rounded-xl shadow-lg text-xs font-semibold flex items-center justify-between gap-3 pointer-events-auto transition-all animate-bounce`;
+      toast.innerHTML = `<span>${message}</span>`;
+      
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
 </body>
 </html>
